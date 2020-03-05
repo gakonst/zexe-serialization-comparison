@@ -1,3 +1,8 @@
+@ -1,8 +1,4 @@
+# Output of `cargo bench`
+
+```
+   Compiling serialization-benchmark v0.1.0 (<redacted>)
     Finished bench [optimized] target(s) in 0.08s
      Running target/release/deps/serialization_benchmark-0c2a00d8fc8cb3db
 
@@ -51,3 +56,4 @@ Found 16 outliers among 100 measurements (16.00%)
   4 (4.00%) high mild
   12 (12.00%) high severe
 
+```
