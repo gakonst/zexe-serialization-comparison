@@ -1,4 +1,4 @@
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
 // Write 1000 elements to 2 buffers. The new version seems to be 50% slower?
 fn write(c: &mut Criterion) {
@@ -9,11 +9,10 @@ fn write(c: &mut Criterion) {
         };
         let el = <G1Affine as AffineCurve>::Projective::rand(&mut rand::thread_rng()).into_affine();
         let size = G1Affine::buffer_size();
-        let mut writer = vec![0; 1000 * size];
         b.iter(|| {
+            let mut writer = vec![0; 1000 * size];
             for i in 0..1000 {
-                el.serialize(&[], &mut writer[i * size..(i + 1) * size])
-                    .unwrap()
+                black_box(el.serialize(&[], &mut writer[i * size..(i + 1) * size])).unwrap()
             }
         })
     });
@@ -23,10 +22,10 @@ fn write(c: &mut Criterion) {
             bls12_377::G1Affine, AffineCurve, CanonicalSerialize, ProjectiveCurve, UniformRand,
         };
         let el = <G1Affine as AffineCurve>::Projective::rand(&mut rand::thread_rng()).into_affine();
-        let mut writer = Vec::with_capacity(1000 * el.serialized_size());
         b.iter(|| {
+            let mut writer = Vec::with_capacity(1000 * el.serialized_size());
             for _ in 0..1000 {
-                el.serialize(&mut writer).unwrap()
+                black_box(el.serialize(&mut writer)).unwrap()
             }
         })
     });
@@ -34,18 +33,18 @@ fn write(c: &mut Criterion) {
 
 // Write 1000 elements to 2 buffers. The new version seems to be 2x slower?
 fn write_uncompressed(c: &mut Criterion) {
-    let mut group = c.benchmark_group(format!("write"));
+    let mut group = c.benchmark_group(format!("write_uncompressed"));
     group.bench_function("ours", |b| {
         use algebra_ours::{
-            bls12_377::G1Affine, AffineCurve, CanonicalSerialize, ProjectiveCurve, UniformRand, GroupSerialize
+            bls12_377::G1Affine, AffineCurve, CanonicalSerialize, GroupSerialize, ProjectiveCurve,
+            UniformRand,
         };
         let el = <G1Affine as AffineCurve>::Projective::rand(&mut rand::thread_rng()).into_affine();
         let size = 2 * G1Affine::buffer_size();
-        let mut writer = vec![0; 1000 * size];
         b.iter(|| {
+            let mut writer = vec![0; 1000 * size];
             for i in 0..1000 {
-                el.serialize_uncompressed(&mut writer[i * size..(i + 1) * size])
-                    .unwrap()
+                black_box(el.serialize_uncompressed(&mut writer[i * size..(i + 1) * size])).unwrap()
             }
         })
     });
@@ -55,10 +54,10 @@ fn write_uncompressed(c: &mut Criterion) {
             bls12_377::G1Affine, AffineCurve, CanonicalSerialize, ProjectiveCurve, UniformRand,
         };
         let el = <G1Affine as AffineCurve>::Projective::rand(&mut rand::thread_rng()).into_affine();
-        let mut writer = Vec::with_capacity(1000 * el.uncompressed_size());
         b.iter(|| {
+            let mut writer = Vec::with_capacity(1000 * el.uncompressed_size());
             for _ in 0..1000 {
-                el.serialize_uncompressed(&mut writer).unwrap()
+                black_box(el.serialize_uncompressed(&mut writer)).unwrap()
             }
         })
     });
